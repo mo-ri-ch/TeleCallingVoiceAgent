@@ -93,3 +93,25 @@ async def voice_chat(
         audio_base64=base64.b64encode(reply_audio).decode(),
         used_chunks=context_results,
     )
+
+
+@router.get("/greet")
+async def greet(company_id: str) -> dict:
+    """Return greeting text + Sarvam TTS audio for phone-call-mode opening."""
+    company = _companies.get(company_id)
+    if company is None:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    text = (
+        f"Hello! Thank you for calling {company.name}. "
+        f"I'm {company.agent_name}, how can I help you today?"
+    )
+    language_code = sarvam.language_code_for(company.primary_language.value)
+
+    try:
+        audio_bytes = sarvam.synthesize(text, language_code)
+        audio_b64 = base64.b64encode(audio_bytes).decode()
+    except SarvamError:
+        audio_b64 = ""
+
+    return {"text": text, "audio_base64": audio_b64}

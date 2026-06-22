@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { Bot, Loader2, Mic, MicOff, Send, User } from "lucide-react";
+import { Bot, Loader2, Mic, MicOff, Phone, Send, User } from "lucide-react";
 
 import { PageHeader } from "@/components/layout/page-header";
+import { PhoneCallModal } from "@/components/playground/phone-call-modal";
 import { VoiceWaveform, type VoiceState } from "@/components/playground/voice-waveform";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -40,6 +41,7 @@ export default function PlaygroundPage() {
   const [error, setError] = useState<string | null>(null);
   const [voiceState, setVoiceState] = useState<VoiceState>("idle");
   const [voiceError, setVoiceError] = useState<string | null>(null);
+  const [callOpen, setCallOpen] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
@@ -295,6 +297,14 @@ export default function PlaygroundPage() {
 
   return (
     <div className="space-y-6">
+      {callOpen && company && (
+        <PhoneCallModal
+          companyId={effectiveCompanyId}
+          agentName={company.agentName}
+          companyName={company.name}
+          onClose={() => setCallOpen(false)}
+        />
+      )}
       <PageHeader
         title="AI Agent Playground"
         description="Chat with the AI telecalling agent as a customer would, grounded in the live knowledge base."
@@ -303,7 +313,16 @@ export default function PlaygroundPage() {
       <Card>
         <CardContent className="space-y-4">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="text-sm font-medium">Persona</span>
+            <Button
+              type="button"
+              onClick={() => setCallOpen(true)}
+              disabled={!effectiveCompanyId}
+              className="gap-2 rounded-full bg-green-600 hover:bg-green-700 text-white"
+            >
+              <Phone className="size-4" />
+              Simulate Phone Call
+            </Button>
+            <span className="text-sm font-medium">or chat:</span>
             <Select value={effectiveCompanyId} onValueChange={handleCompanyChange}>
               <SelectTrigger className="w-[280px]">
                 <SelectValue placeholder="Select a company" />
