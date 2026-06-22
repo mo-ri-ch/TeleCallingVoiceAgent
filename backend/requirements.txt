@@ -1,0 +1,14 @@
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.10.4
+httpx==0.28.1
+beautifulsoup4==4.12.3
+anthropic==0.109.1
+python-dotenv==1.2.2
+python-multipart==0.0.20
+
+# Optional (Phase 15) -- only needed if AWS_S3_BUCKET / GOOGLE_SHEETS_SPREADSHEET_ID
+# are configured in .env. Without them, call recordings are saved locally and
+# the Google Sheets sync is skipped, so the app runs fine without these.
+# boto3
+# google-auth
